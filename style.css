@@ -1,0 +1,33 @@
+body {
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    /* height: 100vh; */
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: goldenrod;
+    background-color: #202020;
+}
+
+.container {
+    text-align: center;
+}
+h1 {
+    color: firebrick;
+}
+
+.lb-data .lb-close {
+    background-color: #333;
+}
+
+.lb-outerContainer {
+    background-color: #333;
+}
+
+.lb-loader {
+    background-color: #333;
+}
+
+.lb-image {
+    background-color: #333;
+}
