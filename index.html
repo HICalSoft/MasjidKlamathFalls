@@ -25,7 +25,57 @@
     <main class="pt-20 items-center justify-center">
         <div class="container mx-auto px-4">
             <img src="resources/images/MasjidKlamathFalls.jpg" style="width: 512px; height: 384px;" alt="Masjid Klamath Falls" class="mx-auto w-full h-auto mb-4">
-            <h2 class="text-4xl font-bold mb-4">Masjid Klamath Falls is not an official destination yet.</br>Friday Jumuah prayers are held in our houses and offices alhamdulilah.</br> Please text or email if you want the address where Jumuah is being held this week.</h2>
+            <h2 class="text-4xl font-bold mb-4">Jumuah prayer is held weekly on Friday @ 12:30PM.</h2>
+            <div id="countdown" class="text-center text-xl font-bold"></div>
+            <script>
+                function getNextFriday() {
+                    const now = new Date();
+                    const nextFriday = new Date(now);
+                    nextFriday.setDate(now.getDate() + (5 - now.getDay() + 7) % 7);
+                    nextFriday.setHours(12, 30, 0, 0);
+                    if (nextFriday < now) {
+                        nextFriday.setDate(nextFriday.getDate() + 7);
+                    }
+                    return nextFriday;
+                }
+        
+                function updateCountdown() {
+                    const now = new Date();
+                    const nextFriday = getNextFriday();
+                    const diff = nextFriday - now;
+        
+                    const friday1230 = new Date(nextFriday);
+                    const friday1330 = new Date(nextFriday);
+                    friday1330.setHours(13, 30, 0, 0);
+        
+                    if (now >= friday1230 && now <= friday1330) {
+                        document.getElementById('countdown').innerHTML = "In Jumuah";
+                        return;
+                    }
+        
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+                    let countdownText = `Time till next Jumuah: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+        
+                    if (diff <= 12 * 60 * 60 * 1000) {
+                        countdownText += `<br><a href="250main.html" class="font-bold">Friday prayer will be held at 250 Main St. this week (click for directions)</a>`;
+                    } else {
+                        countdownText += `<br>Prayer location for this week will be shown 12 hours before prayer time. (Otherwise contact the number below for more information about this weeks prayer)`
+                    }
+        
+                    document.getElementById('countdown').innerHTML = countdownText;
+        
+                    if (diff < 0) {
+                        clearInterval(interval);
+                        document.getElementById('countdown').innerHTML = "It's time!";
+                    }
+                }
+        
+                const interval = setInterval(updateCountdown, 1000);
+            </script>
         </div>
         <hr class="my-8" style="border-color: yellowgreen">
         <section class="container mx-auto px-4 mt-8 text-left">
