@@ -71,11 +71,6 @@
                     }
         
                     document.getElementById('countdown').innerHTML = countdownText;
-        
-                    if (diff < 0) {
-                        clearInterval(interval);
-                        document.getElementById('countdown').innerHTML = "It's time!";
-                    }
                 }
         
                 const interval = setInterval(updateCountdown, 1000);
