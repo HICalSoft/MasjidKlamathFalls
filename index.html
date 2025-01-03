@@ -38,26 +38,30 @@
                     }
                     return nextFriday;
                 }
-        
+
+                function convertToPST(date) {
+                    return new Date(date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+                }
+
                 function updateCountdown() {
                     const now = new Date();
-                    const nextFriday = getNextFriday();
+                    const nextFriday = convertToPST(getNextFriday());
                     const diff = nextFriday - now;
-        
+
                     const friday1230 = new Date(nextFriday);
                     const friday1330 = new Date(nextFriday);
                     friday1330.setHours(13, 30, 0, 0);
-        
+
                     if (now >= friday1230 && now <= friday1330) {
                         document.getElementById('countdown').innerHTML = "In Jumuah";
                         return;
                     }
-        
+
                     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
+
                     let countdownText = `Time till next Jumuah: ${days}d ${hours}h ${minutes}m ${seconds}s`;
         
                     if (diff <= 12 * 60 * 60 * 1000) {
