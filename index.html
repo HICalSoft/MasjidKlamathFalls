@@ -65,9 +65,9 @@
                     let countdownText = `Time till next Jumuah: ${days}d ${hours}h ${minutes}m ${seconds}s`;
         
                     if (diff <= 12 * 60 * 60 * 1000) {
-                        countdownText += `<br><a href="250main.html" class="font-bold">Friday prayer will be held at 250 Main St. this week (click for directions)</a>`;
+                        countdownText += `<br><a href="250main.html" class="font-bold text-blue-500">Friday prayer will be held at 250 Main St. this week (click for directions)</a>`;
                     } else {
-                        countdownText += `<br>Prayer location for this week will be shown 12 hours before prayer time. (Otherwise contact the number below for more information about this weeks prayer)`
+                        countdownText += `<br><p class="text-sm text-gray-400">The weekly prayer is held in our offices & homes. The location for this week will be shown 12 hours before prayer time. <br>(Otherwise contact the number below for more information about this weeks prayer)</p>`
                     }
         
                     document.getElementById('countdown').innerHTML = countdownText;
