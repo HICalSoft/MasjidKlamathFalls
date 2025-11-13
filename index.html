@@ -120,7 +120,101 @@
         <hr class="my-8" style="border-color: yellowgreen">
         <section class="container mx-auto px-4 mt-8 text-left">
             <h2 class="text-2xl font-bold mb-4">Halal Food in Klamath Falls</h2>
-            <h3 class="text-2l font-bold mb-4 underline">US Chefs Food Store</h2>
+            <h3 class="text-3xl font-bold mb-4 underline">Halal Restaurants</h3>
+            <h4 class="text-xl font-bold mb-2">Greek Pita - 100% Halal Restaurant</h4>
+            <p class="mb-3">Are you looking for authentic, delicious halal food in Klamath Falls? Look no further! <strong>Greek Pita</strong> is the only 100% halal restaurant for hundreds of miles in any direction. Come and experience exceptional Greek and Mediterranean cuisine prepared to the highest halal standards.</p>
+            <p class="mb-2"><strong>Location:</strong> <a href="https://maps.app.goo.gl/i8ZNEQYtgDaDdA6X6" class="text-blue-500 underline">1817 Avalon St, Klamath Falls, OR 97603</a></p>
+            <div class="relative w-full mb-6">
+                <div class="relative bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer" style="aspect-ratio: 16/9;" onclick="openFullscreen()">
+                    <img id="carousel-image" src="resources/images/HalalMeats/GreekPita/GreekPitaBeefShawarmaPlate.jpg" alt="Greek Pita" class="w-full h-full object-cover">
+                    <button class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-3 py-2 rounded hover:bg-opacity-75 transition" onclick="previousImage(event)">❮</button>
+                    <button class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-3 py-2 rounded hover:bg-opacity-75 transition" onclick="nextImage(event)">❯</button>
+                </div>
+                <div class="flex gap-2 mt-3 justify-center flex-wrap">
+                    <button onclick="setImage(0)" class="thumbnail-btn border-2 border-gray-400 rounded hover:border-blue-500 transition" style="width: 60px; height: 60px;">
+                        <img src="resources/images/HalalMeats/GreekPita/GreekPitaBeefShawarmaPlate.jpg" alt="Thumb 1" class="w-full h-full object-cover rounded">
+                    </button>
+                    <button onclick="setImage(1)" class="thumbnail-btn border-2 border-gray-400 rounded hover:border-blue-500 transition" style="width: 60px; height: 60px;">
+                        <img src="resources/images/HalalMeats/GreekPita/GreekPitaGyroSandwich.jpg" alt="Thumb 2" class="w-full h-full object-cover rounded">
+                    </button>
+                    <button onclick="setImage(2)" class="thumbnail-btn border-2 border-gray-400 rounded hover:border-blue-500 transition" style="width: 60px; height: 60px;">
+                        <img src="resources/images/HalalMeats/GreekPita/GreekPitaFalafelHummus.jpg" alt="Thumb 3" class="w-full h-full object-cover rounded">
+                    </button>
+                    <button onclick="setImage(3)" class="thumbnail-btn border-2 border-gray-400 rounded hover:border-blue-500 transition" style="width: 60px; height: 60px;">
+                        <img src="resources/images/HalalMeats/GreekPita/GreekPitaHummus.jpg" alt="Thumb 4" class="w-full h-full object-cover rounded">
+                    </button>
+                    <button onclick="setImage(4)" class="thumbnail-btn border-2 border-gray-400 rounded hover:border-blue-500 transition" style="width: 60px; height: 60px;">
+                        <img src="resources/images/HalalMeats/GreekPita/GreekPitaCoffee.jpg" alt="Thumb 5" class="w-full h-full object-cover rounded">
+                    </button>
+                    <button onclick="setImage(5)" class="thumbnail-btn border-2 border-gray-400 rounded hover:border-blue-500 transition" style="width: 60px; height: 60px;">
+                        <img src="resources/images/HalalMeats/GreekPita/GreekPitaMenu1.jpg" alt="Thumb 6" class="w-full h-full object-cover rounded">
+                    </button>
+                    <button onclick="setImage(6)" class="thumbnail-btn border-2 border-gray-400 rounded hover:border-blue-500 transition" style="width: 60px; height: 60px;">
+                        <img src="resources/images/HalalMeats/GreekPita/GreekPitaMenu2.jpg" alt="Thumb 7" class="w-full h-full object-cover rounded">
+                    </button>
+                </div>
+            </div>
+            <div id="fullscreenModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center" onclick="closeFullscreen(event)">
+                <div class="relative w-full h-full flex items-center justify-center" onclick="event.stopPropagation()">
+                    <img id="fullscreen-image" src="" alt="Greek Pita Fullscreen" class="max-w-full max-h-full object-contain">
+                    <button class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 text-black px-4 py-2 rounded hover:bg-opacity-75 transition text-2xl font-bold" onclick="previousImage(event)">❮</button>
+                    <button class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 text-black px-4 py-2 rounded hover:bg-opacity-75 transition text-2xl font-bold" onclick="nextImage(event)">❯</button>
+                    <button class="absolute top-4 right-4 bg-white text-black px-3 py-1 rounded hover:bg-gray-200 transition font-bold text-xl" onclick="closeFullscreen()">✕</button>
+                </div>
+            </div>
+            <script>
+                const images = [
+                    'resources/images/HalalMeats/GreekPita/GreekPitaBeefShawarmaPlate.jpg',
+                    'resources/images/HalalMeats/GreekPita/GreekPitaGyroSandwich.jpg',
+                    'resources/images/HalalMeats/GreekPita/GreekPitaFalafelHummus.jpg',
+                    'resources/images/HalalMeats/GreekPita/GreekPitaHummus.jpg',
+                    'resources/images/HalalMeats/GreekPita/GreekPitaCoffee.jpg',
+                    'resources/images/HalalMeats/GreekPita/GreekPitaMenu1.jpg',
+                    'resources/images/HalalMeats/GreekPita/GreekPitaMenu2.jpg'
+                ];
+                let currentIndex = 0;
+                
+                function setImage(index) {
+                    currentIndex = index;
+                    document.getElementById('carousel-image').src = images[currentIndex];
+                    document.getElementById('fullscreen-image').src = images[currentIndex];
+                }
+                
+                function nextImage(event) {
+                    if (event) event.stopPropagation();
+                    currentIndex = (currentIndex + 1) % images.length;
+                    setImage(currentIndex);
+                }
+                
+                function previousImage(event) {
+                    if (event) event.stopPropagation();
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    setImage(currentIndex);
+                }
+                
+                function openFullscreen() {
+                    document.getElementById('fullscreen-image').src = images[currentIndex];
+                    document.getElementById('fullscreenModal').classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+                
+                function closeFullscreen(event) {
+                    if (event && event.target.id !== 'fullscreenModal') return;
+                    document.getElementById('fullscreenModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+                
+                document.addEventListener('keydown', function(event) {
+                    const modal = document.getElementById('fullscreenModal');
+                    if (modal.classList.contains('hidden')) return;
+                    
+                    if (event.key === 'Escape') closeFullscreen();
+                    if (event.key === 'ArrowRight') nextImage(event);
+                    if (event.key === 'ArrowLeft') previousImage(event);
+                });
+            </script>
+            <h3 class="text-3xl font-bold mb-4 underline">Halal Meat</h3>
+            <h4 class="text-xl font-bold mb-2">US Chefs Food Store</h4>
             <p>You can find bulk frozen halal meats in Klamath Falls at the local <a href="https://www.chefstore.com/locations/store/klamath-falls-545/" class="text-blue-500">US Foods Chef's Store</a></p>
             <p>The have frozen halal burgers, frozen halal Gyro meat, bulk frozen halal chickens, and other items.</p>
             <div class="flex flex-wrap">
