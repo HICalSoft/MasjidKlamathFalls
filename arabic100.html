@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic 100 — Masjid Klamath Falls</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- flv.js removed: files converted to H.264 MP4 -->
+    <style>
+        body { background-color: #202020; color: goldenrod; }
+
+        /* Sidebar module buttons */
+        .mod-btn {
+            transition: background-color 0.15s, border-color 0.15s;
+            border-left: 3px solid transparent;
+        }
+        .mod-btn:hover  { background-color: rgba(218,165,32,0.15); }
+        .mod-btn.active { background-color: rgba(218,165,32,0.22); border-left-color: goldenrod; }
+
+        /* Video list items */
+        .vid-btn {
+            transition: background-color 0.15s, border-color 0.15s;
+            border-left: 3px solid transparent;
+        }
+        .vid-btn:hover   { background-color: rgba(218,165,32,0.10); }
+        .vid-btn.playing { background-color: rgba(218,165,32,0.20); border-left-color: goldenrod; }
+
+        /* Action buttons */
+        .btn-pdf {
+            background-color: rgba(218,165,32,0.18);
+            border: 1px solid goldenrod;
+            color: goldenrod;
+            transition: background-color 0.15s;
+        }
+        .btn-pdf:hover { background-color: rgba(218,165,32,0.32); }
+
+        .btn-dl {
+            background-color: rgba(139,0,0,0.65);
+            border: 1px solid firebrick;
+            color: #f0f0f0;
+            transition: background-color 0.15s;
+        }
+        .btn-dl:hover { background-color: rgba(178,34,34,0.80); }
+
+        .btn-nav {
+            background-color: #374151;
+            color: #d1d5db;
+            transition: background-color 0.15s;
+        }
+        .btn-nav:hover { background-color: #4b5563; }
+        .btn-nav:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        /* Fixed header height variable */
+        :root { --hdr: 68px; --bar: 54px; --top: calc(var(--hdr) + var(--bar)); }
+
+        video { background: #000; display: block; }
+
+        /* Player error overlay */
+        #playerWrap { position: relative; }
+        #playerError {
+            display: none;
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.90);
+            border-radius: 4px;
+            flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 2rem; gap: 1rem;
+        }
+        #playerError.show { display: flex; }
+
+        /* Download drawer */
+        #dlDrawer { display: none; position: fixed; inset: 0; z-index: 60; }
+        #dlDrawer.show { display: block; }
+        #dlPanel {
+            position: absolute; right: 0; top: 0; bottom: 0;
+            width: min(500px, 100vw);
+            background: #111827;
+            border-left: 1px solid #374151;
+            display: flex; flex-direction: column;
+        }
+        .dl-link {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-radius: 6px;
+            background: #1f2937; border: 1px solid #374151;
+            color: goldenrod; text-decoration: none;
+            font-size: 0.85rem;
+            transition: background 0.15s;
+        }
+        .dl-link:hover { background: #273344; }
+        .dl-link span { flex: 1; }
+
+        /* Mobile sidebar toggle */
+        #sidebarToggle { display: none; }
+        @media (max-width: 1023px) {
+            #sidebarToggle { display: flex; }
+            #sidebar { display: none; position: relative; width: 100%; max-height: none; top: 0; border-right: none; border-bottom: 1px solid #374151; }
+            #sidebar.open { display: block; }
+            #mainLayout { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Fixed Site Header ────────────────────────────────────────── -->
+    <header class="w-full fixed top-0 bg-gray-800 shadow-md z-50" style="height: var(--hdr);">
+        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+            <a href="index.html" class="text-sm font-medium hover:underline" style="color: goldenrod;">← Home</a>
+        </div>
+        <div class="flex justify-center items-center h-full px-20">
+            <h1 class="text-2xl md:text-3xl font-bold text-red-800 text-center leading-tight">
+                Arabic 100 — Masjid Klamath Falls
+            </h1>
+        </div>
+        <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
+            <a href="index.html">
+                <img src="resources/images/MasjidKlamathFalls-Heart-Transparent.png" alt="Home" class="h-10 w-auto">
+            </a>
+        </div>
+    </header>
+
+    <!-- ── Sticky Action Bar ─────────────────────────────────────────── -->
+    <div class="fixed z-40 w-full bg-gray-900 border-b border-gray-700 flex flex-wrap items-center justify-between px-4 gap-2"
+         style="top: var(--hdr); height: var(--bar);">
+        <span class="text-sm font-semibold hidden sm:block" style="color: goldenrod;">
+            Basic Arabic Course — 26 Modules · 95 Videos
+        </span>
+        <!-- Mobile sidebar toggle -->
+        <button id="sidebarToggle" onclick="toggleSidebar()"
+                class="btn-pdf text-xs font-medium px-3 py-1.5 rounded items-center gap-1 lg:hidden">
+            ☰ Modules
+        </button>
+        <div class="flex gap-2 flex-wrap">
+            <a href="ARB100/Module0CourseResources/Arabic100Book.pdf"
+               download="Arabic100Book.pdf"
+               class="btn-pdf text-xs font-medium px-3 py-1.5 rounded flex items-center gap-1"
+               style="text-decoration: none;">
+                📄 Download Textbook (PDF)
+            </a>
+            <button onclick="openDownloads()"
+                    class="btn-dl text-xs font-medium px-3 py-1.5 rounded flex items-center gap-1">
+                ⬇ Download All Files
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Page Body (below fixed header + bar) ──────────────────────── -->
+    <div style="margin-top: var(--top);" id="mainLayout" class="flex">
+
+        <!-- ── Left Sidebar: Module List ─────────────────────────────── -->
+        <aside id="sidebar"
+               class="bg-gray-900 border-r border-gray-700 overflow-y-auto flex-shrink-0"
+               style="width: 272px; position: sticky; top: var(--top); height: calc(100vh - var(--top));">
+            <div class="p-3">
+                <p class="text-xs uppercase tracking-widest text-gray-500 px-2 pb-2">Course Modules</p>
+                <div id="moduleList"></div>
+            </div>
+        </aside>
+
+        <!-- ── Main Content ───────────────────────────────────────────── -->
+        <main class="flex-1 p-4 overflow-y-auto" style="min-width: 0;">
+
+            <!-- Video Player -->
+            <div class="mb-3">
+                <div id="playerWrap">
+                    <video id="videoPlayer" controls class="w-full rounded shadow-lg" style="max-height: 500px;">
+                        Your browser does not support HTML5 video.
+                    </video>
+                    <!-- Error overlay (shown when FLV can't be decoded) -->
+                    <div id="playerError">
+                        <p id="playerErrorMsg" class="text-base font-semibold" style="color: #f87171;"></p>
+                        <p class="text-xs text-gray-400 max-w-sm" id="playerErrorHint"></p>
+                        <a id="playerErrorDl" href="#" download
+                           class="btn-dl text-sm px-5 py-2.5 rounded flex items-center gap-2 mt-1"
+                           style="text-decoration: none; color: #f0f0f0;">
+                            ⬇ Download this video
+                        </a>
+                    </div>
+                </div>
+                <!-- Progress / now-playing info -->
+                <div class="flex items-center justify-between mt-2 px-1">
+                    <div id="nowPlayingInfo">
+                        <p class="text-sm text-gray-400">Select a module and video to begin playing.</p>
+                    </div>
+                    <span id="progressLabel" class="text-xs text-gray-500 whitespace-nowrap ml-3"></span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex gap-2 mb-5">
+                <button id="btnPrev" onclick="playPrev()" class="btn-nav text-sm px-4 py-2 rounded">← Prev</button>
+                <button id="btnNext" onclick="playNext()" class="btn-nav text-sm px-4 py-2 rounded">Next →</button>
+            </div>
+
+            <!-- Current module title + download module -->
+            <div class="flex items-center justify-between mb-3">
+                <h2 id="currentModuleName" class="text-lg font-bold" style="color: goldenrod;"></h2>
+                <button id="downloadModuleBtn" onclick="openDownloads(curMod)"
+                        class="btn-dl text-xs px-3 py-1.5 rounded hidden">
+                    ⬇ Download Module
+                </button>
+            </div>
+
+            <!-- Video list -->
+            <div id="videoList" class="flex flex-col gap-1.5 mb-6"></div>
+
+            <!-- MP4 note -->
+            <p class="text-xs text-gray-600 mt-4">
+                Videos are served as MP4 (H.264). They play natively in all modern browsers and on all devices.
+                Use the ⬇ button to download individual videos. Tested on Chrome, Firefox, Safari, and Edge.
+            </p>
+        </main>
+    </div><!-- end mainLayout -->
+
+    <!-- ── Download Drawer ──────────────────────────────────────────── -->
+    <div id="dlDrawer">
+        <!-- backdrop -->
+        <div class="absolute inset-0 bg-black bg-opacity-70" onclick="closeDownloads()"></div>
+        <!-- panel -->
+        <div id="dlPanel">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-700 flex-shrink-0"
+                 style="background: #111827;">
+                <h3 id="dlTitle" class="text-base font-bold" style="color: goldenrod;"></h3>
+                <button onclick="closeDownloads()"
+                        class="text-gray-400 hover:text-gray-200 text-2xl leading-none px-1">×</button>
+            </div>
+            <div id="dlContent" class="p-4 overflow-y-auto flex-1 flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+
+    <!-- ── JavaScript ───────────────────────────────────────────────── -->
+    <script>
+    // ── Course Data ──────────────────────────────────────────────────
+    const PDF_PATH = 'ARB100/Module0CourseResources/Arabic100Book.pdf';
+
+    function vids(prefix, letters) {
+        return letters.map(l => `Basic Arabic ${prefix}${l}.flv`);
+    }
+
+    const modules = [
+        { name: 'Module 0: Course Resources', folder: 'Module0CourseResources', videos: [] },
+        { name: 'Module 1',  folder: 'Module 1',  videos: vids('01', ['a','b']) },
+        { name: 'Module 2',  folder: 'Module 2',  videos: vids('02', ['a','b','c','d','e','f','g','h']) },
+        { name: 'Module 3',  folder: 'Module 3',  videos: vids('03', ['a','b','c','d','e','f']) },
+        { name: 'Module 4',  folder: 'Module 4',  videos: vids('04', ['a','b','c','d']) },
+        { name: 'Module 5',  folder: 'Module 5',  videos: vids('05', ['a','b','c','d']) },
+        { name: 'Module 6',  folder: 'Module 6',  videos: vids('06', ['a','b']) },
+        { name: 'Module 7',  folder: 'Module 7',  videos: vids('07', ['a','b','c']) },
+        { name: 'Module 8',  folder: 'Module 8',  videos: vids('08', ['a','b','c','d']) },
+        { name: 'Module 9',  folder: 'Module 9',  videos: vids('09', ['a','b']) },
+        { name: 'Module 10', folder: 'Module 10', videos: vids('10', ['a','b','c']) },
+        { name: 'Module 11', folder: 'Module 11', videos: vids('11', ['a','b']) },
+        { name: 'Module 12', folder: 'Module 12', videos: vids('12', ['a','b','c','d']) },
+        { name: 'Module 13', folder: 'Module 13', videos: vids('13', ['a','b','c']) },
+        { name: 'Module 14', folder: 'Module 14', videos: vids('14', ['a','b','c']) },
+        { name: 'Module 15', folder: 'Module 15', videos: vids('15', ['a','b']) },
+        { name: 'Module 16', folder: 'Module 16', videos: vids('16', ['a','b','c','d']) },
+        { name: 'Module 17', folder: 'Module 17', videos: vids('17', ['a','b','c','d']) },
+        { name: 'Module 18', folder: 'Module 18', videos: vids('18', ['a','b','c']) },
+        { name: 'Module 19', folder: 'Module 19', videos: vids('19', ['a','b','c']) },
+        { name: 'Module 20', folder: 'Module 20', videos: vids('20', ['a','b','c']) },
+        { name: 'Module 21', folder: 'Module 21', videos: vids('21', ['a','b','c','d']) },
+        { name: 'Module 22', folder: 'Module 22', videos: vids('22', ['a','b','c']) },
+        { name: 'Module 23', folder: 'Module 23', videos: vids('23', ['a','b','c']) },
+        { name: 'Module 24', folder: 'Module 24', videos: vids('24', ['a','b','c','d']) },
+        { name: 'Module 25', folder: 'Module 25', videos: vids('25', ['a','b','c','d','e','f','g']) },
+        { name: 'Module 26', folder: 'Module 26', videos: vids('26', ['a','b','c','d','e']) },
+    ];
+
+    // Total video count for progress display
+    const totalVideos = modules.reduce((s, m) => s + m.videos.length, 0);
+    // Flat list of all [moduleIdx, videoIdx] for global prev/next
+    const flatList = [];
+    modules.forEach((m, mi) => m.videos.forEach((_, vi) => flatList.push([mi, vi])));
+
+    // ── State ────────────────────────────────────────────────────────
+    let curMod = 1;
+    let curVid = 0;
+
+    // ── URL Helper (MP4) ─────────────────────────────────────────────
+    function videoUrl(mi, vi) {
+        const m = modules[mi];
+        const mp4 = m.videos[vi].replace('.flv', '.mp4');
+        return `ARB100/${encodeURIComponent(m.folder)}/${encodeURIComponent(mp4)}`;
+    }
+
+    // ── Video Player ─────────────────────────────────────────────────
+    function showPlayerError(url, filename, hint) {
+        document.getElementById('playerErrorMsg').textContent = '⚠ This video cannot play in your browser.';
+        document.getElementById('playerErrorHint').textContent = hint || '';
+        const dl = document.getElementById('playerErrorDl');
+        dl.href = url;
+        dl.download = filename;
+        document.getElementById('playerError').classList.add('show');
+    }
+    function hidePlayerError() {
+        document.getElementById('playerError').classList.remove('show');
+    }
+
+    function loadVideo(url, title, modName) {
+        const el = document.getElementById('videoPlayer');
+        hidePlayerError();
+
+        // Stop any previous playback
+        el.pause();
+        el.removeAttribute('src');
+        el.load();
+
+        const mp4name = title + '.mp4';
+        el.src = url;
+        el.onerror = () => showPlayerError(url, mp4name,
+            'Could not load video — the file may still be converting, or try refreshing.');
+        el.play().catch(() => {});
+
+        const globalPos = flatList.findIndex(([mi, vi]) => mi === curMod && vi === curVid);
+        document.getElementById('nowPlayingInfo').innerHTML =
+            `<p class="text-sm font-semibold" style="color:goldenrod;">${title}</p>
+             <p class="text-xs text-gray-400">${modName}</p>`;
+        document.getElementById('progressLabel').textContent =
+            globalPos >= 0 ? `Video ${globalPos + 1} / ${totalVideos}` : '';
+
+        updateHighlights();
+    }
+
+    // ── Module Selection ─────────────────────────────────────────────
+    function selectModule(mi) {
+        curMod = mi;
+        curVid = 0;
+        const mod = modules[mi];
+
+        // Sidebar active state
+        document.querySelectorAll('.mod-btn').forEach((el, i) => {
+            el.classList.toggle('active', i === mi);
+            if (i === mi) el.scrollIntoView({ block: 'nearest' });
+        });
+
+        document.getElementById('currentModuleName').textContent = mod.name;
+
+        const dlBtn = document.getElementById('downloadModuleBtn');
+        dlBtn.classList.toggle('hidden', mod.videos.length === 0);
+
+        const listEl = document.getElementById('videoList');
+
+        if (mod.videos.length === 0) {
+            // Module 0 — show PDF resource
+            listEl.innerHTML = `
+                <div class="p-5 rounded bg-gray-800 border border-gray-700 text-center">
+                    <p class="text-sm text-gray-400 mb-4">This module contains the course textbook:</p>
+                    <a href="${PDF_PATH}" download="Arabic100Book.pdf"
+                       class="btn-pdf inline-flex items-center gap-2 px-5 py-3 rounded text-sm font-medium"
+                       style="text-decoration: none;">
+                        📄 Arabic 100 Book — Download Textbook (PDF)
+                    </a>
+                </div>`;
+            document.getElementById('nowPlayingInfo').innerHTML =
+                `<p class="text-sm text-gray-400">No videos in Module 0 — see resources below.</p>`;
+            document.getElementById('progressLabel').textContent = '';
+            return;
+        }
+
+        listEl.innerHTML = mod.videos.map((v, vi) => {
+            const label = v.replace('.flv', '');
+            const url   = videoUrl(mi, vi);
+            return `
+                <button onclick="selectVideo(${vi})" id="vid-${vi}"
+                        class="vid-btn w-full text-left flex items-center gap-3 px-4 py-3 rounded
+                               bg-gray-800 border border-gray-700"
+                        style="color: goldenrod;">
+                    <span class="text-gray-500 text-xs w-6 text-right flex-shrink-0">${vi + 1}.</span>
+                    <span class="flex-1 text-sm truncate">${label}</span>
+                    <a href="${url}" download="${v.replace('.flv', '.mp4')}"
+                       onclick="event.stopPropagation()"
+                       title="Download this video"
+                       class="flex-shrink-0 text-xs text-gray-500 hover:text-gray-200 px-2 py-1 rounded bg-gray-700">⬇</a>
+                </button>`;
+        }).join('');
+
+        selectVideo(0);
+
+        // Close mobile sidebar after selection
+        if (window.innerWidth < 1024) {
+            document.getElementById('sidebar').classList.remove('open');
+        }
+    }
+
+    function selectVideo(vi) {
+        curVid = vi;
+        const mod = modules[curMod];
+        const url = videoUrl(curMod, vi);
+        loadVideo(url, mod.videos[vi].replace('.flv', ''), mod.name);
+    }
+
+    function updateHighlights() {
+        document.querySelectorAll('[id^="vid-"]').forEach(el => el.classList.remove('playing'));
+        const current = document.getElementById(`vid-${curVid}`);
+        if (current) current.classList.add('playing');
+    }
+
+    // ── Prev / Next ──────────────────────────────────────────────────
+    function playNext() {
+        const mod = modules[curMod];
+        if (curVid < mod.videos.length - 1) {
+            selectVideo(curVid + 1);
+        } else {
+            // Advance to next module that has videos
+            for (let i = curMod + 1; i < modules.length; i++) {
+                if (modules[i].videos.length > 0) { selectModule(i); return; }
+            }
+        }
+    }
+
+    function playPrev() {
+        if (curVid > 0) {
+            selectVideo(curVid - 1);
+        } else {
+            // Go to previous module with videos, last video
+            for (let i = curMod - 1; i >= 1; i--) {
+                if (modules[i].videos.length > 0) {
+                    selectModule(i);
+                    selectVideo(modules[i].videos.length - 1);
+                    return;
+                }
+            }
+        }
+    }
+
+    // Auto-advance when a video ends
+    document.getElementById('videoPlayer').addEventListener('ended', playNext);
+
+    // ── Download Drawer ───────────────────────────────────────────────
+    // openDownloads(null)  → all modules + PDF
+    // openDownloads(mi)    → single module mi
+    function openDownloads(moduleIdx) {
+        const showAll = (moduleIdx == null);
+        document.getElementById('dlTitle').textContent =
+            showAll ? '⬇ Download All Files' : `⬇ Download — ${modules[moduleIdx].name}`;
+
+        const items = [];
+
+        if (showAll) {
+            // PDF first
+            items.push(`
+                <a class="dl-link" href="${PDF_PATH}" download="Arabic100Book.pdf">
+                    <span>📄</span>
+                    <span>Arabic100Book.pdf — Course Textbook</span>
+                </a>`);
+        }
+
+        const mods = showAll
+            ? modules.map((m, i) => [i, m]).filter(([, m]) => m.videos.length > 0)
+            : [[moduleIdx, modules[moduleIdx]]];
+
+        mods.forEach(([mi, mod]) => {
+            if (showAll) {
+                items.push(`<p class="text-xs uppercase tracking-wider text-gray-500 px-1 pt-2 pb-1">${mod.name}</p>`);
+            }
+            mod.videos.forEach((v, vi) => {
+                const url = videoUrl(mi, vi);
+                const label = v.replace('.flv', '');
+                items.push(`
+                    <a class="dl-link" href="${url}" download="${v.replace('.flv', '.mp4')}">
+                        <span>🎬</span>
+                        <span>${label}</span>
+                    </a>`);
+            });
+        });
+
+        document.getElementById('dlContent').innerHTML = items.join('');
+        document.getElementById('dlDrawer').classList.add('show');
+    }
+
+    function closeDownloads() {
+        document.getElementById('dlDrawer').classList.remove('show');
+    }
+
+    // Close drawer with Escape key
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDownloads(); });
+
+    // ── Mobile Sidebar Toggle ────────────────────────────────────────
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    // ── Build Sidebar ────────────────────────────────────────────────
+    function buildSidebar() {
+        document.getElementById('moduleList').innerHTML = modules.map((mod, i) => {
+            const badge = mod.videos.length > 0
+                ? `${mod.videos.length} video${mod.videos.length !== 1 ? 's' : ''}`
+                : 'Resources';
+            return `
+                <button onclick="selectModule(${i})"
+                        class="mod-btn w-full text-left flex items-center justify-between gap-2
+                               px-3 py-2.5 rounded mb-0.5 text-sm"
+                        style="color: goldenrod;">
+                    <span>${mod.name}</span>
+                    <span class="text-xs text-gray-500 whitespace-nowrap">${badge}</span>
+                </button>`;
+        }).join('');
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────
+    buildSidebar();
+    selectModule(1);
+    </script>
+
+</body>
+</html>
