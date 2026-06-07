@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Khutbahs – Masjid Klamath Falls</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="description" content="Download khutbah notes from Masjid Klamath Falls">
+    <meta name="keywords" content="Khutbah, Friday sermon, Jumuah, Islamic lecture, Masjid Klamath Falls, Sirah, Prophet Muhammad, Yassir Qadhi">
+    <style>
+        .khutbah-row:hover {
+            background-color: #2d3748;
+        }
+        .download-btn:hover {
+            background-color: #9b2c2c;
+        }
+    </style>
+</head>
+<body>
+    <header class="w-full fixed top-0 bg-gray-800 shadow-md z-50">
+        <div class="px-6 py-4 flex justify-center items-center">
+            <h1 class="text-4xl font-bold text-red-800 text-center">Masjid Klamath Falls</h1>
+        </div>
+        <div class="absolute left-6 top-6">
+            <a href="index.html" class="text-yellow-500 hover:text-yellow-300 font-medium text-sm">&#8592; Home</a>
+        </div>
+        <div class="absolute right-6 top-4">
+            <a href="index.html">
+                <img src="resources/images/MasjidKlamathFalls-Heart-Transparent.png" alt="Masjid Klamath Falls" class="h-12 w-auto">
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <div class="container mx-auto px-4 py-8">
+            <h2 class="text-3xl font-bold mb-2" style="color: firebrick;">Khutbahs</h2>
+            <p class="mb-8" style="color: #a0aec0;">
+                Download ready-to-deliver khutbah  below.
+            </p>
+
+            <div id="loading" class="text-center py-16">
+                <div class="text-yellow-500 text-xl animate-pulse">Loading khutbahs&hellip;</div>
+            </div>
+
+            <div id="error" class="hidden text-center py-16">
+                <div class="text-red-400 text-xl mb-3">Unable to load khutbahs</div>
+                <div id="error-message" class="text-sm" style="color: #a0aec0;"></div>
+            </div>
+
+            <div id="khutbahs-container" class="hidden"></div>
+        </div>
+    </main>
+
+    <script>
+        const GITHUB_API_URL = 'https://api.github.com/repos/HICalSoft/MasjidKlamathFalls/contents/khutbahs';
+        const CACHE_KEY = 'mkf_khutbahs_v1';
+        const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+        /** Convert CamelCase to "Camel Case" */
+        function camelToWords(str) {
+            return str.replace(/([a-z])([A-Z])/g, '$1 $2').trim();
+        }
+
+        /**
+         * Parse a khutbah filename into structured data.
+         * Expected format: Khutbah_{TopicCamelCase}-{N}-{AuthorCamelCase}.docx
+         * Falls back gracefully for non-standard filenames.
+         */
+        function parseFilename(filename) {
+            const base = filename.replace(/\.(docx|pdf|doc)$/i, '');
+            const withoutPrefix = base.replace(/^Khutbah_/, '');
+
+            const parts = withoutPrefix.split('-');
+            const numIndex = parts.findIndex(p => /^\d+$/.test(p));
+
+            if (numIndex === -1) {
+                // No part number — treat entire name as title with no grouping number
+                return {
+                    number: 0,
+                    topic: camelToWords(withoutPrefix),
+                    author: '',
+                    groupKey: camelToWords(withoutPrefix),
+                };
+            }
+
+            const topic  = camelToWords(parts.slice(0, numIndex).join(''));
+            const author = camelToWords(parts.slice(numIndex + 1).join(''));
+            const number = parseInt(parts[numIndex], 10);
+
+            return { number, topic, author, groupKey: `${topic}||${author}` };
+        }
+
+        /** Organise a flat array of file objects into sorted groups. */
+        function buildGroups(files) {
+            const khutbahs = files
+                .filter(f => /\.(docx|pdf|doc)$/i.test(f.name))
+                .map(f => ({
+                    ...parseFilename(f.name),
+                    filename: f.name,
+                    downloadUrl: f.download_url,
+                }));
+
+            const groups = new Map();
+            for (const k of khutbahs) {
+                if (!groups.has(k.groupKey)) {
+                    groups.set(k.groupKey, { topic: k.topic, author: k.author, items: [] });
+                }
+                groups.get(k.groupKey).items.push(k);
+            }
+
+            // Sort each group by part number
+            for (const group of groups.values()) {
+                group.items.sort((a, b) => a.number - b.number);
+            }
+
+            return groups;
+        }
+
+        function showError(msg) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = msg;
+        }
+
+        function renderKhutbahs(groups) {
+            document.getElementById('loading').classList.add('hidden');
+            const container = document.getElementById('khutbahs-container');
+            container.classList.remove('hidden');
+            container.innerHTML = '';
+
+            if (groups.size === 0) {
+                container.innerHTML = '<p style="color: #a0aec0;" class="text-center py-8">No khutbahs found.</p>';
+                return;
+            }
+
+            for (const group of groups.values()) {
+                const section = document.createElement('section');
+                section.className = 'mb-12';
+
+                // Series heading
+                const heading = document.createElement('div');
+                heading.className = 'mb-4 pb-2';
+                heading.style.borderBottom = '1px solid #b7791f';
+                const partLabel = group.items.length === 1 ? '1 part' : `${group.items.length} parts`;
+                heading.innerHTML =
+                    `<h3 class="text-2xl font-bold" style="color: goldenrod;">${group.topic}</h3>` +
+                    (group.author
+                        ? `<p class="text-sm mt-1" style="color: #a0aec0;">by ${group.author} &bull; ${partLabel}</p>`
+                        : `<p class="text-sm mt-1" style="color: #a0aec0;">${partLabel}</p>`);
+                section.appendChild(heading);
+
+                // Download rows
+                const list = document.createElement('div');
+                list.className = 'grid gap-2';
+
+                for (const item of group.items) {
+                    const row = document.createElement('div');
+                    row.className = 'khutbah-row flex items-center justify-between rounded px-4 py-3 transition';
+                    row.style.backgroundColor = '#2d3748';
+
+                    const label = document.createElement('span');
+                    label.style.color = 'goldenrod';
+                    label.textContent = item.number > 0 ? `Part ${item.number}` : item.topic;
+
+                    const link = document.createElement('a');
+                    link.href = item.downloadUrl;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.className = 'download-btn text-white text-sm font-medium px-4 py-1 rounded transition';
+                    link.style.backgroundColor = '#822727';
+                    link.textContent = '\u2B07 Download';
+
+                    row.appendChild(label);
+                    row.appendChild(link);
+                    list.appendChild(row);
+                }
+
+                section.appendChild(list);
+                container.appendChild(section);
+            }
+        }
+
+        async function loadKhutbahs() {
+            // Try cache first
+            try {
+                const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+                if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+                    renderKhutbahs(buildGroups(cached.files));
+                    return;
+                }
+            } catch (_) { /* ignore cache errors */ }
+
+            // Fetch from GitHub Contents API
+            try {
+                const response = await fetch(GITHUB_API_URL);
+
+                if (response.status === 403) {
+                    throw new Error('GitHub API rate limit reached. Please wait a few minutes and refresh.');
+                }
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({}));
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                }
+
+                const files = await response.json();
+
+                // Persist to cache
+                try {
+                    localStorage.setItem(CACHE_KEY, JSON.stringify({ files, timestamp: Date.now() }));
+                } catch (_) { /* storage might be full */ }
+
+                renderKhutbahs(buildGroups(files));
+
+            } catch (err) {
+                showError(err.message + ' — If this persists, please contact us at iysaleh@gmail.com.');
+            }
+        }
+
+        loadKhutbahs();
+    </script>
+</body>
+</html>
