@@ -131,7 +131,7 @@
             ☰ Modules
         </button>
         <div class="flex gap-2 flex-wrap">
-            <a href="ARB100/Module0CourseResources/Arabic100Book.pdf"
+            <a href="https://raw.githubusercontent.com/HICalSoft/MasjidKlamathFalls/main/ARB100/Module0CourseResources/Arabic100Book.pdf"
                download="Arabic100Book.pdf"
                class="btn-pdf text-xs font-medium px-3 py-1.5 rounded flex items-center gap-1"
                style="text-decoration: none;">
@@ -232,7 +232,8 @@
     <!-- ── JavaScript ───────────────────────────────────────────────── -->
     <script>
     // ── Course Data ──────────────────────────────────────────────────
-    const PDF_PATH = 'ARB100/Module0CourseResources/Arabic100Book.pdf';
+    const RAW_BASE = 'https://raw.githubusercontent.com/HICalSoft/MasjidKlamathFalls/main';
+    const PDF_PATH = `${RAW_BASE}/ARB100/Module0CourseResources/Arabic100Book.pdf`;
 
     function vids(prefix, letters) {
         return letters.map(l => `Basic Arabic ${prefix}${l}.flv`);
@@ -282,7 +283,7 @@
     function videoUrl(mi, vi) {
         const m = modules[mi];
         const mp4 = m.videos[vi].replace('.flv', '.mp4');
-        return `ARB100/${encodeURIComponent(m.folder)}/${encodeURIComponent(mp4)}`;
+        return `${RAW_BASE}/ARB100/${encodeURIComponent(m.folder)}/${encodeURIComponent(mp4)}`;
     }
 
     // ── Video Player ─────────────────────────────────────────────────

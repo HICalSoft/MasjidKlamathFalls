@@ -1,0 +1,5 @@
+# Exclude large binary directories from the Jekyll build.
+# These are served directly via raw.githubusercontent.com, so they do not
+# need to be copied into _site or bundled into the github-pages artifact.
+exclude:
+  - ARB100
